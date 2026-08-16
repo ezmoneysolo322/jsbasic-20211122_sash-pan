@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Карточка статов</title>
+<style>
+  :root{--bg:#f4f4f0;--card:#fff;--text:#151515;--muted:#6d6d68;--line:#d8d8d0;--fill:#171717;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif;line-height:1.35}
+  .page{max-width:980px;margin:28px auto;padding:0 18px 40px}
+  header{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:18px}
+  h1{font-size:34px;margin:0 0 4px;letter-spacing:-.04em}
+  .subtitle{color:var(--muted);font-size:14px}
+  .levelbox{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 18px;min-width:220px;text-align:right}
+  .levelbox b{font-size:28px;display:block}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 1px 0 rgba(0,0,0,.02)}
+  .card h2{margin:0;font-size:22px;letter-spacing:-.02em}
+  .desc{color:var(--muted);font-size:13px;margin:3px 0 16px}
+  .row{padding:12px 0;border-top:1px solid var(--line)}
+  .row:first-of-type{border-top:0}
+  .rowhead{display:flex;justify-content:space-between;gap:12px;align-items:baseline;margin-bottom:8px}
+  .rowtitle{font-weight:700}
+  .rule{font-size:12px;color:var(--muted);text-align:right}
+  .circles{display:flex;flex-wrap:wrap;gap:9px}
+  .circle{width:30px;height:30px;border:2px solid var(--text);border-radius:50%;background:transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:.12s ease}
+  .circle.on{background:var(--fill)}
+  .footer{margin-top:15px;padding-top:14px;border-top:2px solid var(--text);display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .xp{font-weight:800}.xp span{font-size:22px}
+  .statlevel{color:var(--muted);font-size:13px;margin-top:2px}
+  button.action{border:0;border-radius:11px;padding:10px 13px;font-weight:700;background:var(--text);color:#fff;cursor:pointer}
+  button.action:disabled{opacity:.3;cursor:not-allowed}
+  .controls{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+  .ghost{border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:10px;padding:9px 12px;cursor:pointer}
+  .note{font-size:12px;color:var(--muted);margin-top:12px}
+  @media (max-width:760px){.grid{grid-template-columns:1fr}header{align-items:flex-start;flex-direction:column}.levelbox{text-align:left;width:100%}.page{margin:12px auto;padding:0 12px 24px}h1{font-size:28px}.card{padding:16px}.rowhead{align-items:flex-start;flex-direction:column;gap:3px}.rule{text-align:left}}
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div>
+      <h1>КАРТОЧКА СТАТОВ</h1>
+      <div class="subtitle">Маленький кружок = действие. Закрытый цикл = +1 XP. Ничего не обнуляется.</div>
+    </div>
+    <div class="levelbox">
+      <span>CHARACTER LEVEL</span>
+      <b id="charLevel">1</b>
+      <span>TOTAL XP: <strong id="totalXp">0</strong></span>
+    </div>
+  </header>
+
+  <div class="grid">
+    <section class="card" data-stat="sales">
+      <h2>SALES — ПРОДАЖИ</h2>
+      <div class="desc">Два независимых цикла</div>
+      <div class="row" data-cycle="sales_lpr" data-needed="5">
+        <div class="rowhead"><span class="rowtitle">Поиск ЛПР</span><span class="rule">1 ○ = 10 качественных ЛПР</span></div>
+        <div class="circles"></div>
+        <div class="note">5 кружков = 50 ЛПР = закрытый цикл</div>
+      </div>
+      <div class="row" data-cycle="sales_touch" data-needed="5">
+        <div class="rowhead"><span class="rowtitle">Касания</span><span class="rule">1 ○ = 15 качественных исходящих</span></div>
+        <div class="circles"></div>
+        <div class="note">5 кружков = 75 касаний = закрытый цикл</div>
+      </div>
+      <div class="footer">
+        <div><div class="xp">SALES XP: <span data-xp>0</span></div><div class="statlevel">STAT LEVEL: <span data-level>1</span></div></div>
+        <button class="action" data-complete disabled>Закрыть готовый цикл +1 XP</button>
+      </div>
+    </section>
+
+    <section class="card" data-stat="focus">
+      <h2>FOCUS — ФОКУС</h2>
+      <div class="desc">Один цикл рабочего режима</div>
+      <div class="row" data-cycle="focus_days" data-needed="5">
+        <div class="rowhead"><span class="rowtitle">Сфокусированный рабочий день</span><span class="rule">1 ○ = один правильный рабочий день</span></div>
+        <div class="circles"></div>
+        <div class="note">Один режим работы + смартфон убран + минимум выполнен + следующее действие оставлено</div>
+      </div>
+      <div class="footer">
+        <div><div class="xp">FOCUS XP: <span data-xp>0</span></div><div class="statlevel">STAT LEVEL: <span data-level>1</span></div></div>
+        <button class="action" data-complete disabled>Закрыть цикл +1 XP</button>
+      </div>
+    </section>
+
+    <section class="card" data-stat="body">
+      <h2>BODY — ЗДОРОВЬЕ</h2>
+      <div class="desc">Один составной цикл — нужно закрыть все строки</div>
+      <div class="row" data-cycle="body_training" data-needed="3">
+        <div class="rowhead"><span class="rowtitle">Тренировки</span><span class="rule">1 ○ = 1 силовая тренировка</span></div>
+        <div class="circles"></div>
+      </div>
+      <div class="row" data-cycle="body_cooking" data-needed="2">
+        <div class="rowhead"><span class="rowtitle">Готовка еды</span><span class="rule">1 ○ = еда примерно на 3 дня</span></div>
+        <div class="circles"></div>
+      </div>
+      <div class="row" data-cycle="body_food" data-needed="5">
+        <div class="rowhead"><span class="rowtitle">Нормальное питание</span><span class="rule">1 ○ = день с 3 нормальными приёмами пищи</span></div>
+        <div class="circles"></div>
+      </div>
+      <div class="row" data-cycle="body_phone" data-needed="5">
+        <div class="rowhead"><span class="rowtitle">Смартфон вне кровати</span><span class="rule">1 ○ = 1 ночь</span></div>
+        <div class="circles"></div>
+      </div>
+      <div class="footer">
+        <div><div class="xp">BODY XP: <span data-xp>0</span></div><div class="statlevel">STAT LEVEL: <span data-level>1</span></div></div>
+        <button class="action" data-complete disabled>Закрыть BODY-цикл +1 XP</button>
+      </div>
+    </section>
+
+    <section class="card" data-stat="finance">
+      <h2>FINANCE — ФИНАНСЫ</h2>
+      <div class="desc">Только учёт расходов</div>
+      <div class="row" data-cycle="finance_days" data-needed="7">
+        <div class="rowhead"><span class="rowtitle">Учёт расходов</span><span class="rule">1 ○ = внесены все траты за день</span></div>
+        <div class="circles"></div>
+        <div class="note">7 учтённых дней = закрытый цикл</div>
+      </div>
+      <div class="footer">
+        <div><div class="xp">FINANCE XP: <span data-xp>0</span></div><div class="statlevel">STAT LEVEL: <span data-level>1</span></div></div>
+        <button class="action" data-complete disabled>Закрыть цикл +1 XP</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="controls">
+    <button class="ghost" id="resetBtn">Сбросить всё</button>
+  </div>
+</div>
+
+<script>
+const KEY='lifeStatsV1';
+function loadState(){
+  let raw='';
+  try{ if(window.AndroidStorage) raw=AndroidStorage.getState() || ''; }catch(e){}
+  if(!raw) raw=localStorage.getItem(KEY) || '{}';
+  try{return JSON.parse(raw);}catch(e){return {};}
+}
+const state=loadState();
+state.xp ||= {sales:0,focus:0,body:0,finance:0};
+state.cycles ||= {};
+
+function save(){
+  const raw=JSON.stringify(state);
+  localStorage.setItem(KEY, raw);
+  try{ if(window.AndroidStorage) AndroidStorage.saveState(raw); }catch(e){}
+  renderSummary();
+}
+function statLevel(xp){ return 1 + Math.floor(xp/5); }
+function totalXp(){ return Object.values(state.xp).reduce((a,b)=>a+b,0); }
+function charLevel(){ return 1 + Math.floor(totalXp()/10); }
+
+function initRows(){
+  document.querySelectorAll('.row[data-cycle]').forEach(row=>{
+    const id=row.dataset.cycle, needed=Number(row.dataset.needed);
+    if(!Array.isArray(state.cycles[id])) state.cycles[id]=Array(needed).fill(false);
+    if(state.cycles[id].length!==needed) state.cycles[id]=Array(needed).fill(false);
+    const wrap=row.querySelector('.circles'); wrap.innerHTML='';
+    state.cycles[id].forEach((on,i)=>{
+      const b=document.createElement('button');
+      b.className='circle'+(on?' on':''); b.type='button'; b.title='Отметить действие';
+      b.addEventListener('click',()=>{state.cycles[id][i]=!state.cycles[id][i]; save(); initRows(); updateButtons();});
+      wrap.appendChild(b);
+    });
+  });
+}
+
+function rowComplete(id){ return state.cycles[id]?.every(Boolean); }
+function readyForStat(stat){
+  if(stat==='sales') return rowComplete('sales_lpr') || rowComplete('sales_touch');
+  if(stat==='focus') return rowComplete('focus_days');
+  if(stat==='body') return ['body_training','body_cooking','body_food','body_phone'].every(rowComplete);
+  if(stat==='finance') return rowComplete('finance_days');
+}
+
+function completeStat(stat){
+  if(!readyForStat(stat)) return;
+  state.xp[stat]++;
+  if(stat==='sales'){
+    if(rowComplete('sales_lpr')) state.cycles.sales_lpr.fill(false);
+    else if(rowComplete('sales_touch')) state.cycles.sales_touch.fill(false);
+  }
+  if(stat==='focus') state.cycles.focus_days.fill(false);
+  if(stat==='body') ['body_training','body_cooking','body_food','body_phone'].forEach(k=>state.cycles[k].fill(false));
+  if(stat==='finance') state.cycles.finance_days.fill(false);
+  save(); initRows(); updateButtons();
+}
+
+function updateButtons(){
+  document.querySelectorAll('.card[data-stat]').forEach(card=>{
+    const stat=card.dataset.stat, btn=card.querySelector('[data-complete]');
+    btn.disabled=!readyForStat(stat);
+    btn.onclick=()=>completeStat(stat);
+  });
+}
+
+function renderSummary(){
+  document.getElementById('totalXp').textContent=totalXp();
+  document.getElementById('charLevel').textContent=charLevel();
+  document.querySelectorAll('.card[data-stat]').forEach(card=>{
+    const s=card.dataset.stat, xp=state.xp[s]||0;
+    card.querySelector('[data-xp]').textContent=xp;
+    card.querySelector('[data-level]').textContent=statLevel(xp);
+  });
+}
+
+document.getElementById('resetBtn').addEventListener('click',()=>{
+  if(confirm('Точно сбросить весь прогресс и XP?')){
+    localStorage.removeItem(KEY);
+    try{ if(window.AndroidStorage) AndroidStorage.clearState(); }catch(e){}
+    location.reload();
+  }
+});
+
+initRows(); renderSummary(); updateButtons(); save();
+</script>
+</body>
+</html>
