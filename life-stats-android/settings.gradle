@@ -7,3 +7,4 @@ pluginManagement {
 }
 rootProject.name = 'LifeStats'
 include ':app'
+// build trigger
