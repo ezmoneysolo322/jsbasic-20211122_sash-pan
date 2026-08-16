@@ -1,0 +1,41 @@
+name: Build Life Stats APK
+
+on:
+  push:
+    branches:
+      - 'life-stats-apk-build-*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.10.2'
+
+      - name: Install Android SDK packages
+        run: |
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -x "$SDKMANAGER" ]; then SDKMANAGER="$(command -v sdkmanager)"; fi
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Build APK
+        working-directory: life-stats-android
+        run: gradle assembleDebug --no-daemon
+
+      - name: Prepare artifact
+        run: cp life-stats-android/app/build/outputs/apk/debug/app-debug.apk LifeStats.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LifeStats-APK
+          path: LifeStats.apk
+          retention-days: 1
